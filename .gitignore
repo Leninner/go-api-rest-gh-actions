@@ -7,6 +7,7 @@
 *.dll
 *.so
 *.dylib
+go-api-gh*
 
 # Test binary, built with `go test -c`
 *.test
@@ -19,3 +20,17 @@
 
 # Go workspace file
 go.work
+
+# IDE Related
+.vscode
+.idea
+*.iml
+
+# OS Related
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
