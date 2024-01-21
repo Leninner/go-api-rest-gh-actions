@@ -5,10 +5,10 @@ on:
     branches: [develop]
 
 jobs:
-  lint:
+  format_and_check_possible_static_errors:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Go
@@ -16,8 +16,20 @@ jobs:
         with:
           go-version: 1.16
 
-      - name: Build
-        run: go build -v
+      - name: Format and check possible static errors
+        run: gofmt -l . && go vet ./...
+  
+  test:
+    runs-on: ubuntu-latest
+    needs: format_and_check_possible_static_errors
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Test
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.16
+
+      - name: Test Go api
         run: go test -v ./...
