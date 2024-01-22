@@ -12,9 +12,9 @@ import (
 )
 
 type task struct {
-	ID      int    `json:ID`
-	Name    string `json:Name`
-	Content string `json:Content`
+	ID      int    `json:"ID"`
+	Name    string `json:"Name"`
+	Content string `json:"Content"`
 }
 
 type allTasks []task
