@@ -29,6 +29,7 @@ resource "aws_instance" "go_api_server" {
   ami = var.ami
   instance_type = var.instance_type
   vpc_security_group_ids = [ aws_security_group.security_group.id ]
+  key_name = "go-api"
 
   user_data = <<-EOF
               #!/bin/bash
