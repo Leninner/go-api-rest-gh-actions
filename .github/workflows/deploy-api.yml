@@ -39,12 +39,11 @@ jobs:
           echo "Deploying..."
           scp -o StrictHostKeyChecking=no -i aws.pem go-api ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }}:~/go-api
 
-      - name: Create service
+      - name: Start api
         run: |
-          echo "Creating service..."
-          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl stop go-api.service"
-          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo mv go-api /usr/local/bin/go-api"
-          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl start go-api.service"
+          echo "Starting api..."
+          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "./go-api & echo $! > go-api.pid"
+          echo "Api started at link: https://${{ env.AWS_EC2_HOST }}:3031"
 
       - name: Finish
         run: echo "Deployment finished"
