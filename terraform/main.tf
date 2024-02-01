@@ -31,12 +31,6 @@ resource "aws_instance" "go_api_server" {
   vpc_security_group_ids = [ aws_security_group.security_group.id ]
   key_name = "go-api"
 
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo yum update -y
-              sudo yum install -y golang
-              EOF
-
   tags = {
     Name = "go-api-server"
   }
@@ -44,7 +38,7 @@ resource "aws_instance" "go_api_server" {
 
 resource "aws_security_group" "security_group" {
   vpc_id      = data.aws_vpc.default.id
-  description = "Allow SSH (TCP port 22) and HTTP (TCP port 80) in"
+  description = "Allow SSH (TCP port 22) and TCP/3001 from the world"
   name = "go-api-server-sg"
 
   egress {
@@ -60,14 +54,6 @@ resource "aws_security_group" "security_group" {
     protocol    = "tcp"
     cidr_blocks = var.allowed_ssh_cidr_blocks
     description = "Allow SSH access from the world"
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_http_cidr_blocks
-    description = "Allow HTTP access from the world"
   }
 
   ingress {
