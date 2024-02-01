@@ -12,9 +12,9 @@ import (
 )
 
 type task struct {
-	ID      int    `json:ID`
-	Name    string `json:Name`
-	Content string `json:Content`
+	ID      int    `json:"ID"`
+	Name    string `json:"Name"`
+	Content string `json:"Content"`
 }
 
 type allTasks []task
@@ -125,5 +125,5 @@ func main() {
 	router.HandleFunc("/tasks/{id}", deleteTask).Methods("DELETE")
 	router.HandleFunc("/tasks/{id}", updateTask).Methods("PUT")
 
-	log.Fatal(http.ListenAndServe(":3000", router))
+	log.Fatal(http.ListenAndServe(":3001", router))
 }

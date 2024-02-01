@@ -34,3 +34,7 @@ Icon?
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+
+# terraform
+.terraform*
+*.tfstate*

@@ -1,0 +1,45 @@
+name: Continous deployment for golang api
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Ambiente a desplegar'
+        required: true
+        default: 'production'
+
+env:
+  AWS_EC2_KEY: ${{ secrets.AWS_EC2_KEY }}
+  AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}
+  AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
+  AWS_EC2_PORT: ${{ secrets.AWS_EC2_PORT }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go 1.21
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.21'
+
+      - name: Build go-api
+        run: go build -v -o go-api
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying..."
+          scp -i ${{ env.AWS_EC2_KEY }} -P ${{ env.AWS_EC2_PORT }} go-api ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }}:~/go-api
+
+      - name: Create service
+        run: |
+          echo "Creating service..."
+          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl stop go-api.service"
+          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo mv go-api /usr/local/bin/go-api"
+          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl start go-api.service"
+
+      - name: Finish
+        run: echo "Deployment finished"
