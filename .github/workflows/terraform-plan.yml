@@ -79,9 +79,3 @@ jobs:
               repo: context.repo.repo,
               body: output
             });
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        run: terraform plan
