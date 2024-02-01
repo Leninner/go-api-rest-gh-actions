@@ -56,14 +56,6 @@ resource "aws_security_group" "security_group" {
     description = "Allow SSH access from the world"
   }
 
-  ingress = {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_http_cidr_blocks
-    description = "Allow HTTP access from the world"
-  }
-
   ingress {
     from_port   = var.go-api-port
     to_port     = var.go-api-port
