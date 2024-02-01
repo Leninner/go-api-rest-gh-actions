@@ -47,5 +47,5 @@ jobs:
       - name: Start api
         run: |
           echo "Starting api..."
-          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "./go-api"
+          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "nohup ./go-api > output.log 2>&1 &"
           echo "Api started at: https://${{ env.AWS_EC2_HOST }}:3031"
