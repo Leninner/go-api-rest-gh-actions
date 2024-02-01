@@ -9,10 +9,9 @@ on:
         default: 'production'
 
 env:
-  AWS_EC2_KEY: ${{ secrets.AWS_EC2_KEY }}
+  AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
   AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}
   AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
-  AWS_EC2_PORT: ${{ secrets.AWS_EC2_PORT }}
 
 jobs:
   deploy:
@@ -29,17 +28,23 @@ jobs:
       - name: Build go-api
         run: go build -v -o go-api
 
+      - name: Build .pem file
+        run: echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
+
+      - name: Set permissions to .pem file
+        run: chmod 600 aws.pem
+
       - name: Deploy to production
         run: |
           echo "Deploying..."
-          scp -i ${{ env.AWS_EC2_KEY }} -P ${{ env.AWS_EC2_PORT }} go-api ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }}:~/go-api
+          scp -i aws.pem go-api ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }}:~/go-api
 
       - name: Create service
         run: |
           echo "Creating service..."
-          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl stop go-api.service"
-          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo mv go-api /usr/local/bin/go-api"
-          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl start go-api.service"
+          ssh -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl stop go-api.service"
+          ssh -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo mv go-api /usr/local/bin/go-api"
+          ssh -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl start go-api.service"
 
       - name: Finish
         run: echo "Deployment finished"
