@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Ambiente a desplegar'
+        description: Ambiente a desplegar
         required: true
-        default: 'production'
+        default: "production"
+        type: choice
+        options:
+          - production
+          - staging
 
 env:
   AWS_PRIVATE_KEY: ${{ secrets.AWS_PRIVATE_KEY }}
@@ -23,16 +27,17 @@ jobs:
       - name: Set up Go 1.21
         uses: actions/setup-go@v4
         with:
-          go-version: '^1.21'
+          go-version: "^1.21"
 
       - name: Build go-api
         run: go build -v -o go-api
 
       - name: Build .pem file
-        run: echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
-
-      - name: Set permissions to .pem file
-        run: chmod 600 aws.pem
+        run: |
+          echo "${{ secrets.AWS_PRIVATE_KEY }}" > aws.pem
+          echo "Pem file created"
+          chmod 600 aws.pem
+          echo "Pem file permissions set"
 
       - name: Deploy to production
         run: |
@@ -42,8 +47,5 @@ jobs:
       - name: Start api
         run: |
           echo "Starting api..."
-          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "./go-api & echo $! > go-api.pid"
-          echo "Api started at link: https://${{ env.AWS_EC2_HOST }}:3031"
-
-      - name: Finish
-        run: echo "Deployment finished"
+          ssh -o StrictHostKeyChecking=no -i aws.pem ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "./go-api"
+          echo "Api started at: https://${{ env.AWS_EC2_HOST }}:3031"

@@ -24,3 +24,9 @@ variable "allowed_http_cidr_blocks" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "go-api-port" {
+  description = "Port on which the Go API server listens"
+  type        = number
+  default     = 3001
+}

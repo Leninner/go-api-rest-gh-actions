@@ -1,4 +1,6 @@
 terraform {
+  required_version = ">= 1.6.6"
+
   cloud {
     organization = "leninner"
 
@@ -13,8 +15,6 @@ terraform {
       version = "~> 5.33.0"
     }
   }
-
-  required_version = ">= 1.6.6"
 }
 
 provider "aws" {
@@ -26,10 +26,10 @@ data "aws_vpc" "default" {
 }
 
 resource "aws_instance" "go_api_server" {
-  ami = var.ami
-  instance_type = var.instance_type
-  vpc_security_group_ids = [ aws_security_group.security_group.id ]
-  key_name = "go-api"
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [aws_security_group.security_group.id]
+  key_name               = "go-api"
 
   tags = {
     Name = "go-api-server"
@@ -39,7 +39,7 @@ resource "aws_instance" "go_api_server" {
 resource "aws_security_group" "security_group" {
   vpc_id      = data.aws_vpc.default.id
   description = "Allow SSH (TCP port 22) and TCP/3001 from the world"
-  name = "go-api-server-sg"
+  name        = "go-api-server-sg"
 
   egress {
     from_port   = 0
@@ -57,9 +57,9 @@ resource "aws_security_group" "security_group" {
   }
 
   ingress {
-    from_port = 3001
-    to_port = 3001
-    protocol = "tcp"
+    from_port   = var.go-api-port
+    to_port     = var.go-api-port
+    protocol    = "tcp"
     cidr_blocks = var.allowed_http_cidr_blocks
     description = "Allow GO API access from the world"
   }
