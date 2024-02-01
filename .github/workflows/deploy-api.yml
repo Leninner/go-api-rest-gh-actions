@@ -27,19 +27,19 @@ jobs:
           go-version: '^1.21'
 
       - name: Build go-api
-        run: go build -v -o gp-api
+        run: go build -v -o go-api
 
       - name: Deploy to production
         run: |
           echo "Deploying..."
-          scp -i ${{ env.AWS_EC2_KEY }} -P ${{ env.AWS_EC2_PORT }} gp-api ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }}:~/gp-api
+          scp -i ${{ env.AWS_EC2_KEY }} -P ${{ env.AWS_EC2_PORT }} go-api ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }}:~/go-api
 
       - name: Create service
         run: |
           echo "Creating service..."
-          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl stop gp-api.service"
-          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo mv gp-api /usr/local/bin/gp-api"
-          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl start gp-api.service"
+          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl stop go-api.service"
+          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo mv go-api /usr/local/bin/go-api"
+          ssh -i ${{ env.AWS_EC2_KEY }} -p ${{ env.AWS_EC2_PORT }} ${{ env.AWS_EC2_USER }}@${{ env.AWS_EC2_HOST }} "sudo systemctl start go-api.service"
 
       - name: Finish
         run: echo "Deployment finished"
