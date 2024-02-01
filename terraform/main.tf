@@ -71,8 +71,8 @@ resource "aws_security_group" "security_group" {
   }
 
   ingress {
-    from_port = 3031
-    to_port = 3031
+    from_port = 3001
+    to_port = 3001
     protocol = "tcp"
     cidr_blocks = var.allowed_http_cidr_blocks
     description = "Allow GO API access from the world"
